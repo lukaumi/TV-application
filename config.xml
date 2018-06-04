@@ -1,0 +1,13 @@
+<initial_config>
+    <transponder>
+        <frequency>818</frequency>
+        <bandwidth>8</bandwidth>
+        <module>DVB-T</module>
+    </transponder>
+    <starting_channel>
+        <audio_pid>103</audio_pid>
+        <video_pid>101</video_pid>
+        <audio_type>mpeg</audio_type>
+        <video_type>mpeg2</video_type>
+    </starting_channel>
+</initial_config>
