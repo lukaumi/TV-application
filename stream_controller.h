@@ -21,24 +21,27 @@
 
 #include "configuration_parser.h"
 
-typedef enum _streamControllerStatus {
+typedef enum _streamControllerStatus
+{
     STREAM_CONTROLLER_NO_ERROR = 0,
     STREAM_CONTROLLER_ERROR
 } streamControllerStatus;
 
-#define ASSERT_TDP_RESULT(x,y)            \
-{                                         \
-    if (STREAM_CONTROLLER_NO_ERROR == x)   \
-        printf("%s success\n", y);        \
-    else {                                \
-        textColor(1,1,0);                 \
-        printf("%s fail\n", y);           \
-        textColor(0,7,0);                 \
-        return STREAM_CONTROLLER_ERROR;   \
-    }                                     \
-}
+#define ASSERT_TDP_RESULT(x, y)              \
+    {                                        \
+        if (STREAM_CONTROLLER_NO_ERROR == x) \
+            printf("%s success\n", y);       \
+        else                                 \
+        {                                    \
+            textColor(1, 1, 0);              \
+            printf("%s fail\n", y);          \
+            textColor(0, 7, 0);              \
+            return STREAM_CONTROLLER_ERROR;  \
+        }                                    \
+    }
 
-typedef struct _channelData {
+typedef struct _channelData
+{
     uint16_t pmtProgramNumber;
 
     startingChannelInit channelInit;
@@ -57,15 +60,17 @@ typedef struct _channelData {
     char *subtitles;
 } channelData;
 
-typedef struct _channels {
+typedef struct _channels
+{
     channelData *channel;
     uint32_t channelCount;
 } Channels;
 
-typedef enum _dvbStreamType {
-    dvbVideo      = 0x01,
+typedef enum _dvbStreamType
+{
+    dvbVideo = 0x01,
     dvbVideoMPEG2 = 0x02,
-    dvbAudioMPEG  = 0x03
+    dvbAudioMPEG = 0x03
 } dvbStreamType;
 
 /****************************************************************************

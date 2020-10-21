@@ -29,7 +29,8 @@
 #define COLOUR_BLACK 0x00
 #define COLOUR_WHITE 0xff
 
-typedef enum _graphicsControllerStatus {
+typedef enum _graphicsControllerStatus
+{
     GRAPHICS_CONTROLLER_NO_ERROR = 0,
     GRAPHICS_CONTROLLER_ERROR
 } graphicsControllerStatus;

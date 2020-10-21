@@ -21,7 +21,8 @@
 
 #include "stream_controller.h"
 
-typedef enum _remoteControllerStatus {
+typedef enum _remoteControllerStatus
+{
     REMOTE_CONTROLLER_NO_ERROR = 0,
     REMOTE_CONTROLLER_ERROR
 } remoteControllerStatus;

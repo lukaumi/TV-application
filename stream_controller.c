@@ -36,8 +36,8 @@
 #define EIT_ID 0x4E
 #define EIT_PID 0x0012
 
-#define VOLUME_MAX  INT_MAX
-#define VOLUME_MIN  0
+#define VOLUME_MAX INT_MAX
+#define VOLUME_MIN 0
 #define VOLUME_STEP 0.05 // increase volume by 5%
 
 #define CHANNEL_RUNNING_STATUS 4
@@ -57,11 +57,11 @@ static Channels channels;
 static uint16_t channelCounter;
 static uint16_t currentChannel;
 static uint32_t currentVolume;
-static uint8_t  volumeMuted;
+static uint8_t volumeMuted;
 
 /* helper functions needed only for stream controller module */
 static streamControllerStatus setFilterAndRegister(uint32_t tableId, uint32_t tablePid);
-static streamControllerStatus freeFilter(int32_t (*callback)(uint8_t* buffer));
+static streamControllerStatus freeFilter(int32_t (*callback)(uint8_t *buffer));
 static void pmtSaveChannel(pmtTable *pmt);
 static void eitSaveChannel(eitTable *eit);
 static streamControllerStatus streamTypeDVBtoTDP(uint32_t dvbStreamType);
@@ -142,17 +142,20 @@ streamControllerStatus startPlayerStream(startingChannelInit *channel)
 
     stopPlayerStream();
 
-    if (channel->videoPID != CONFIGURATION_PARSER_NOT_SET && channel->videoType != CONFIGURATION_PARSER_NOT_SET) {
+    if (channel->videoPID != CONFIGURATION_PARSER_NOT_SET && channel->videoType != CONFIGURATION_PARSER_NOT_SET)
+    {
         result = Player_Stream_Create(playerHandle, sourceHandle, channel->videoPID, channel->videoType, &videoHandle);
         ASSERT_TDP_RESULT(result, "startPlayerStream: Video Player_Stream_Create");
     }
 
-    if (channel->audioPID != CONFIGURATION_PARSER_NOT_SET && channel->audioType != CONFIGURATION_PARSER_NOT_SET) {
+    if (channel->audioPID != CONFIGURATION_PARSER_NOT_SET && channel->audioType != CONFIGURATION_PARSER_NOT_SET)
+    {
         result = Player_Stream_Create(playerHandle, sourceHandle, channel->audioPID, channel->audioType, &audioHandle);
         ASSERT_TDP_RESULT(result, "startPlayerStream: Audio Player_Stream_Create");
     }
 
-    if (!volumeMuted) {
+    if (!volumeMuted)
+    {
         result = Player_Volume_Set(playerHandle, currentVolume);
         ASSERT_TDP_RESULT(result, "startPlayerStream: Player_Volume_Set");
     }
@@ -164,13 +167,15 @@ streamControllerStatus stopPlayerStream()
 {
     uint8_t result;
 
-    if (videoHandle) {
+    if (videoHandle)
+    {
         result = Player_Stream_Remove(playerHandle, sourceHandle, videoHandle);
         ASSERT_TDP_RESULT(result, "stopPlayerStream: Video Player_Stream_Remove");
         videoHandle = 0;
     }
 
-    if (audioHandle) {
+    if (audioHandle)
+    {
         result = Player_Stream_Remove(playerHandle, sourceHandle, audioHandle);
         ASSERT_TDP_RESULT(result, "stopPlayerStream: Audio Player_Stream_Remove");
         audioHandle = 0;
@@ -189,12 +194,14 @@ void *channelsSetup()
     timedWaitForCondition(3);
 
     channels.channelCount = pat->programCount;
-    channels.channel = (channelData*) malloc(channels.channelCount * sizeof(channelData));
+    channels.channel = (channelData *)malloc(channels.channelCount * sizeof(channelData));
 
     int32_t i;
     /* PMT table parsing setup */
-    for (i = 0; i < pat->sectionCount; i++) {
-        if (pat->programInformation[i].programNumber) {
+    for (i = 0; i < pat->sectionCount; i++)
+    {
+        if (pat->programInformation[i].programNumber)
+        {
             result = setFilterAndRegister(PMT_ID, pat->programInformation[i].programMapPid);
             /* Wait for PMT table */
             timedWaitForCondition(3);
@@ -208,7 +215,8 @@ void *channelsSetup()
     pat = NULL;
 
     /* EIT table parsing setup */
-    if (filterHandle) {
+    if (filterHandle)
+    {
         ASSERT_TDP_RESULT(STREAM_CONTROLLER_ERROR, "channelsSetup: EIT Filter already set.");
     }
 
@@ -221,14 +229,15 @@ void *channelsSetup()
     /* Wait for EIT table */
     timedWaitForCondition(3);
 
-    return (void*) STREAM_CONTROLLER_NO_ERROR;
+    return (void *)STREAM_CONTROLLER_NO_ERROR;
 }
 
 streamControllerStatus playChannel(uint16_t channelNumber)
 {
     int8_t result;
 
-    if (channelNumber > channels.channelCount || channelNumber < 1) {
+    if (channelNumber > channels.channelCount || channelNumber < 1)
+    {
         showChannelNumberMessage(channelNumber);
         return STREAM_CONTROLLER_ERROR;
     }
@@ -246,10 +255,12 @@ streamControllerStatus playNextChannel()
 {
     uint8_t result;
 
-    if (currentChannel == channels.channelCount - 1) {
+    if (currentChannel == channels.channelCount - 1)
+    {
         currentChannel = 0;
     }
-    else {
+    else
+    {
         currentChannel++;
     }
 
@@ -265,10 +276,12 @@ streamControllerStatus playPreviousChannel()
 {
     uint8_t result;
 
-    if (currentChannel == 0) {
+    if (currentChannel == 0)
+    {
         currentChannel = channels.channelCount - 1;
     }
-    else {
+    else
+    {
         currentChannel--;
     }
 
@@ -284,10 +297,13 @@ streamControllerStatus volumeMute()
 {
     uint8_t result;
 
-    if (volumeMuted) {
+    if (volumeMuted)
+    {
         result = Player_Volume_Set(playerHandle, currentVolume);
         ASSERT_TDP_RESULT(result, "volumeMute: Player_Volume_Set");
-    } else {
+    }
+    else
+    {
         result = Player_Volume_Set(playerHandle, VOLUME_MIN);
         ASSERT_TDP_RESULT(result, "volumeMute: Player_Volume_Set");
     }
@@ -302,12 +318,14 @@ streamControllerStatus volumeUp()
 {
     uint8_t result;
 
-    if (!volumeMuted) {
+    if (!volumeMuted)
+    {
         result = Player_Volume_Get(playerHandle, &currentVolume);
         ASSERT_TDP_RESULT(result, "volumeUp: Player_Volume_Get");
 
         currentVolume += VOLUME_MAX * VOLUME_STEP;
-        if (currentVolume >= VOLUME_MAX) {
+        if (currentVolume >= VOLUME_MAX)
+        {
             currentVolume = VOLUME_MAX;
         }
     }
@@ -324,13 +342,15 @@ streamControllerStatus volumeDown()
 {
     uint8_t result;
 
-    if (!volumeMuted) {
+    if (!volumeMuted)
+    {
         result = Player_Volume_Get(playerHandle, &currentVolume);
         ASSERT_TDP_RESULT(result, "volumeDown: Player_Volume_Get");
 
         currentVolume -= VOLUME_MAX * VOLUME_STEP;
 
-        if (currentVolume <= VOLUME_MIN) {
+        if (currentVolume <= VOLUME_MIN)
+        {
             currentVolume = VOLUME_MIN;
         }
     }
@@ -361,8 +381,10 @@ streamControllerStatus showVolumeInfo()
 
     float volumePercent;
 
-    if (volumeMuted) volumePercent = 0.0;
-    else volumePercent = (float) currentVolume / VOLUME_MAX;
+    if (volumeMuted)
+        volumePercent = 0.0;
+    else
+        volumePercent = (float)currentVolume / VOLUME_MAX;
 
     result = drawVolumeInfo(volumePercent);
     ASSERT_TDP_RESULT(result, "showVolumeInfo: drawVolumeInfo");
@@ -429,7 +451,8 @@ streamControllerStatus showChannelNumberMessage(uint16_t channelNumberValue)
 static streamControllerStatus setFilterAndRegister(uint32_t tableId, uint32_t tablePid)
 {
     uint8_t result;
-    if (filterHandle) {
+    if (filterHandle)
+    {
         ASSERT_TDP_RESULT(STREAM_CONTROLLER_ERROR, "setFilterAndRegister: Filter already set.");
     }
 
@@ -438,14 +461,15 @@ static streamControllerStatus setFilterAndRegister(uint32_t tableId, uint32_t ta
     ASSERT_TDP_RESULT(result, "setFilterAndRegister: Demux_Set_Filter");
 
     /* Register section filter callback */
-    switch(tableId) {
-        case PAT_ID:
-            result = Demux_Register_Section_Filter_Callback(patCallback);
-            break;
+    switch (tableId)
+    {
+    case PAT_ID:
+        result = Demux_Register_Section_Filter_Callback(patCallback);
+        break;
 
-        case PMT_ID:
-            result = Demux_Register_Section_Filter_Callback(pmtCallback);
-            break;
+    case PMT_ID:
+        result = Demux_Register_Section_Filter_Callback(pmtCallback);
+        break;
     }
     ASSERT_TDP_RESULT(result, "setFilterAndRegister: Demux_Register_Section_Filter_Callback");
 
@@ -460,7 +484,7 @@ static streamControllerStatus setFilterAndRegister(uint32_t tableId, uint32_t ta
  * @return   STREAM_CONTROLLER_NO_ERROR, if there are no errors.
  *           STREAM_CONTROLLER_ERROR, in case of an error.
 ****************************************************************************/
-static streamControllerStatus freeFilter(int32_t (*callback)(uint8_t* buffer))
+static streamControllerStatus freeFilter(int32_t (*callback)(uint8_t *buffer))
 {
     uint8_t result;
 
@@ -509,22 +533,27 @@ static void pmtSaveChannel(pmtTable *pmt)
     channels.channel[channelCounter].subtitles = NULL;
 
     int32_t i;
-    for (i = 0; i < pmt->elementaryInformationCount; i++) {
+    for (i = 0; i < pmt->elementaryInformationCount; i++)
+    {
         streamType = streamTypeDVBtoTDP(pmt->elementaryInformation[i].streamType);
-        if (streamType >= AUDIO_TYPE_DOLBY_AC3 && streamType <= AUDIO_TYPE_UNSUPPORTED) {
+        if (streamType >= AUDIO_TYPE_DOLBY_AC3 && streamType <= AUDIO_TYPE_UNSUPPORTED)
+        {
             /* Audio stream type */
-            if (channels.channel[channelCounter].channelInit.audioType == CONFIGURATION_PARSER_NOT_SET) {
+            if (channels.channel[channelCounter].channelInit.audioType == CONFIGURATION_PARSER_NOT_SET)
+            {
                 channels.channel[channelCounter].channelInit.audioType = streamType;
                 channels.channel[channelCounter].channelInit.audioPID = pmt->elementaryInformation[i].elementaryPid;
             }
         }
-        else if (streamType >= VIDEO_TYPE_H264 && streamType <= VIDEO_TYPE_VP6F) {
+        else if (streamType >= VIDEO_TYPE_H264 && streamType <= VIDEO_TYPE_VP6F)
+        {
             /* Video stream type */
             channels.channel[channelCounter].channelInit.videoType = streamType;
             channels.channel[channelCounter].channelInit.videoPID = pmt->elementaryInformation[i].elementaryPid;
         }
 
-        if (pmt->subtitleCount) {
+        if (pmt->subtitleCount)
+        {
             channels.channel[channelCounter].subtitleCount = pmt->subtitleCount;
             channels.channel[channelCounter].subtitles = pmt->subtitles;
         }
@@ -544,18 +573,24 @@ static void eitSaveChannel(eitTable *eit)
 {
     int i;
     int j;
-    for (i = 0; i < channels.channelCount; i++) {
-        if (eit->eitHeader.serviceId == channels.channel[i].pmtProgramNumber) {
-            for (j = 0; j < eit->eventInformationCount; j++) {
-                if (eit->eventInformation[j].runningStatus == CHANNEL_RUNNING_STATUS) {
+    for (i = 0; i < channels.channelCount; i++)
+    {
+        if (eit->eitHeader.serviceId == channels.channel[i].pmtProgramNumber)
+        {
+            for (j = 0; j < eit->eventInformationCount; j++)
+            {
+                if (eit->eventInformation[j].runningStatus == CHANNEL_RUNNING_STATUS)
+                {
                     channels.channel[i].presentShowStartTime = eit->eventInformation[j].startTime;
                     channels.channel[i].presentShowDuration = eit->eventInformation[j].duration;
 
-                    if (channels.channel[i].presentShowName != NULL) {
+                    if (channels.channel[i].presentShowName != NULL)
+                    {
                         free(channels.channel[i].presentShowName);
                         channels.channel[i].presentShowName = NULL;
                     }
-                    if (channels.channel[i].presentShowDescription != NULL) {
+                    if (channels.channel[i].presentShowDescription != NULL)
+                    {
                         free(channels.channel[i].presentShowDescription);
                         channels.channel[i].presentShowDescription = NULL;
                     }
@@ -563,15 +598,18 @@ static void eitSaveChannel(eitTable *eit)
                     channels.channel[i].presentShowName = eit->eventInformation[j].eventNameChar;
                     channels.channel[i].presentShowDescription = eit->eventInformation[j].textChar;
                 }
-                else {
+                else
+                {
                     channels.channel[i].followingShowStartTime = eit->eventInformation[j].startTime;
                     channels.channel[i].followingShowDuration = eit->eventInformation[j].duration;
 
-                    if (channels.channel[i].followingShowName != NULL) {
+                    if (channels.channel[i].followingShowName != NULL)
+                    {
                         free(channels.channel[i].followingShowName);
                         channels.channel[i].followingShowName = NULL;
                     }
-                    if (channels.channel[i].followingShowDescription != NULL) {
+                    if (channels.channel[i].followingShowDescription != NULL)
+                    {
                         free(channels.channel[i].followingShowDescription);
                         channels.channel[i].followingShowDescription = NULL;
                     }
@@ -580,11 +618,11 @@ static void eitSaveChannel(eitTable *eit)
                     channels.channel[i].followingShowDescription = eit->eventInformation[j].textChar;
                 }
             } // eit->eventInformationCount for loop end
-        } //if eit->eitHeader.serviceId == channels.channel[i].pmtProgramNumber end
-    } // channels.channelCount for loop end
+        }     //if eit->eitHeader.serviceId == channels.channel[i].pmtProgramNumber end
+    }         // channels.channelCount for loop end
 
-
-    for (i = 0; i < eit->eventInformationCount; i++) {
+    for (i = 0; i < eit->eventInformationCount; i++)
+    {
         eit->eventInformation[i].eventNameChar = NULL;
         eit->eventInformation[i].textChar = NULL;
     }
@@ -602,12 +640,13 @@ static void eitSaveChannel(eitTable *eit)
 ****************************************************************************/
 static streamControllerStatus streamTypeDVBtoTDP(uint32_t dvbStreamType)
 {
-    switch(dvbStreamType) {
-        case dvbVideoMPEG2:
-            return VIDEO_TYPE_MPEG2;
+    switch (dvbStreamType)
+    {
+    case dvbVideoMPEG2:
+        return VIDEO_TYPE_MPEG2;
 
-        case dvbAudioMPEG:
-            return AUDIO_TYPE_MPEG_AUDIO;
+    case dvbAudioMPEG:
+        return AUDIO_TYPE_MPEG_AUDIO;
     }
 
     return CONFIGURATION_PARSER_NOT_SET;
@@ -626,11 +665,12 @@ static streamControllerStatus timedWaitForCondition(uint8_t seconds)
     struct timespec lockStatusWaitTime;
     struct timeval now;
 
-    gettimeofday(&now,NULL);
+    gettimeofday(&now, NULL);
     lockStatusWaitTime.tv_sec = now.tv_sec + seconds;
 
     ASSERT_TDP_RESULT(pthread_mutex_lock(&statusMutex), "threadMutexUnlock: pthread_mutex_lock");
-    if (ETIMEDOUT == pthread_cond_timedwait(&statusCondition, &statusMutex, &lockStatusWaitTime)) {
+    if (ETIMEDOUT == pthread_cond_timedwait(&statusCondition, &statusMutex, &lockStatusWaitTime))
+    {
         printf("\n\nLock timeout exceeded!\n\n");
         return STREAM_CONTROLLER_ERROR;
     }
@@ -666,10 +706,12 @@ static streamControllerStatus threadMutexUnlock()
 ****************************************************************************/
 static int32_t tunerStatusCallback(t_LockStatus status)
 {
-    if (status == STATUS_LOCKED) {
+    if (status == STATUS_LOCKED)
+    {
         threadMutexUnlock();
     }
-    else {
+    else
+    {
         printf("\n\n\tCALLBACK NOT LOCKED\n\n");
     }
     return STREAM_CONTROLLER_NO_ERROR;
@@ -687,7 +729,7 @@ static int32_t patCallback(uint8_t *buffer)
 {
     uint8_t result;
 
-    pat = (patTable*) malloc(sizeof(patTable));
+    pat = (patTable *)malloc(sizeof(patTable));
 
     result = parsePAT(buffer, pat);
     ASSERT_TDP_RESULT(result, "patCallback: parsePAT");

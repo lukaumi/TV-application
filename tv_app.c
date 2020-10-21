@@ -26,7 +26,8 @@ int main(int argc, char **argv)
     pthread_t remoteThreadHandle;
     pthread_t channelsSetupHandle;
 
-    if (argc != 2) {
+    if (argc != 2)
+    {
         printf("Invalid number of command line arguments!\n");
         return 1;
     }

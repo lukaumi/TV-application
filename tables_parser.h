@@ -25,14 +25,16 @@
 #define SHORT_EVENT_DESCRIPTOR_TAG 0x4D
 #define SUBTITLE_CHARACTERS_COUNT 3
 
-typedef enum _tablesParserStatus {
+typedef enum _tablesParserStatus
+{
     TABLES_PARSER_NOT_INITIALIZED = -1,
     TABLES_PARSER_NO_ERROR,
     TABLES_PARSER_ERROR
 } tablesParserStatus;
 
 /* ---- PAT table ---- */
-typedef struct _patTableHeader {
+typedef struct _patTableHeader
+{
     uint8_t tableId;
     uint8_t sectionSyntaxIndicator;
     uint16_t sectionLength;
@@ -43,12 +45,14 @@ typedef struct _patTableHeader {
     uint8_t lastSectionNumber;
 } patTableHeader;
 
-typedef struct _patTableProgramInformation {
+typedef struct _patTableProgramInformation
+{
     uint16_t programNumber;
     uint16_t programMapPid;
 } patTableProgramInformation;
 
-typedef struct _patTable {
+typedef struct _patTable
+{
     patTableHeader patHeader;
     patTableProgramInformation *programInformation;
     uint8_t sectionCount;
@@ -57,7 +61,8 @@ typedef struct _patTable {
 /* ---- PAT table ---- */
 
 /* ---- PMT table ---- */
-typedef struct _pmtTableHeader {
+typedef struct _pmtTableHeader
+{
     uint8_t tableId;
     uint8_t sectionSyntaxIndicator;
     uint16_t sectionLength;
@@ -70,13 +75,15 @@ typedef struct _pmtTableHeader {
     uint16_t programInfoLength;
 } pmtTableHeader;
 
-typedef struct _pmtTableElementaryInformation {
+typedef struct _pmtTableElementaryInformation
+{
     uint8_t streamType;
     uint16_t elementaryPid;
     uint16_t esInfoLength;
 } pmtTableElementaryInformation;
 
-typedef struct _pmtTable {
+typedef struct _pmtTable
+{
     pmtTableHeader pmtHeader;
     pmtTableElementaryInformation *elementaryInformation;
     uint8_t elementaryInformationCount;
@@ -86,7 +93,8 @@ typedef struct _pmtTable {
 /* ---- PMT table ---- */
 
 /* ---- EIT table ---- */
-typedef struct _eitTableHeader {
+typedef struct _eitTableHeader
+{
     uint8_t tableId;
     uint8_t sectionSyntaxIndicator;
     uint16_t sectionLength;
@@ -101,7 +109,8 @@ typedef struct _eitTableHeader {
     uint8_t lastTableId;
 } eitTableHeader;
 
-typedef struct _eitTableEventInformation {
+typedef struct _eitTableEventInformation
+{
     uint16_t eventId;
     uint32_t startTime;
     uint32_t duration;
@@ -118,7 +127,8 @@ typedef struct _eitTableEventInformation {
 
 } eitTableEventInformation;
 
-typedef struct _eitTable {
+typedef struct _eitTable
+{
     eitTableHeader eitHeader;
     eitTableEventInformation *eventInformation;
     uint8_t eventInformationCount;
@@ -189,13 +199,4 @@ tablesParserStatus printPMT(pmtTable *pmt);
 ****************************************************************************/
 tablesParserStatus printEIT(eitTable *eit);
 
-#endif  // _TABLES_PARSER_H_
-
-
-
-
-
-
-
-
-
+#endif // _TABLES_PARSER_H_

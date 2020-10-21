@@ -10,7 +10,7 @@ GALOIS_INCLUDE=$(SDK_ROOTFS)/rootfs/home/galois/include
 
 INCS =	-I./../tdp_api
 INCS += -I./include/ 							\
-		-I$(SYSROOT)/usr/include/         \
+		-I$(SYSROOT)/usr/include/         		\
 		-I$(GALOIS_INCLUDE)/Common/include/     \
 		-I$(GALOIS_INCLUDE)/OSAL/include/		\
 		-I$(GALOIS_INCLUDE)/OSAL/include/CPU1/	\
